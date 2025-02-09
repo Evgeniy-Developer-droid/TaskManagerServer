@@ -21,8 +21,9 @@ jobs:
           ssh-keyscan -H ${{ secrets.DO_SERVER_IP }} >> ~/.ssh/known_hosts
       - name: Create .env file on server
         run: |
-          ssh deploy@${{ secrets.DO_SERVER_IP }} << 'EOF'
+          ssh -o StrictHostKeyChecking=no deploy@${{ secrets.DO_SERVER_IP }} << 'EOF'
             echo "${{ secrets.ENV_FILE }}" > /home/deploy/app/.env
+            chmod 600 /home/deploy/app/.env
           EOF
 
 
