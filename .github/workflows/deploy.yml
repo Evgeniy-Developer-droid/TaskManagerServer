@@ -35,7 +35,7 @@ jobs:
             cd /home/deploy/app
 
             if [ ! -d ".git" ]; then
-              git clone ${{ secrets.GIT_REPO_URL }} .
+              git clone ${{ secrets.GIT_REPO_URL }}
             else
               git pull origin main
             fi
