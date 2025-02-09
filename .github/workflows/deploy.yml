@@ -1,0 +1,35 @@
+name: Deploy FastAPI
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.DO_SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.DO_SERVER_IP }} >> ~/.ssh/known_hosts
+      - name: Create .env file on server
+        run: |
+          ssh deploy@${{ secrets.DO_SERVER_IP }} << 'EOF'
+            echo "${{ secrets.ENV_FILE }}" > /home/deploy/app/.env
+          EOF
+
+
+      - name: Deploy to DigitalOcean
+        run: |
+          ssh deploy@${{ secrets.DO_SERVER_IP }} << 'EOF'
+            cd /home/deploy/app
+            git pull origin main
+            docker-compose -f docker-compose.prod.yaml up -d --build
+          EOF
