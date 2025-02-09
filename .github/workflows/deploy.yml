@@ -42,8 +42,8 @@ jobs:
               git pull origin master
             fi
             
+            rm -rf /home/deploy/app/TaskManagerServer
             mv ./TaskManagerServer ../
-            rm -r TaskManagerServer            
 
             docker-compose -f docker-compose.prod.yaml up -d --build
           EOF
