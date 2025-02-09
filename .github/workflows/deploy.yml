@@ -37,8 +37,11 @@ jobs:
             if [ ! -d ".git" ]; then
               git clone ${{ secrets.GIT_REPO_URL }}
             else
-              git pull origin main
+              git pull origin master
             fi
             
+            mv ./TaskManagerServer ../
+            rm -r TaskManagerServer            
+
             docker-compose -f docker-compose.prod.yaml up -d --build
           EOF
