@@ -31,7 +31,14 @@ jobs:
       - name: Deploy to DigitalOcean
         run: |
           ssh deploy@${{ secrets.DO_SERVER_IP }} << 'EOF'
+            mkdir -p /home/deploy/app
             cd /home/deploy/app
-            git pull origin master
+
+            if [ ! -d ".git" ]; then
+              git clone ${{ secrets.GIT_REPO_URL }} .
+            else
+              git pull origin main
+            fi
+            
             docker-compose -f docker-compose.prod.yaml up -d --build
           EOF
