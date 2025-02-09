@@ -19,16 +19,18 @@ jobs:
           echo "${{ secrets.DO_SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H ${{ secrets.DO_SERVER_IP }} >> ~/.ssh/known_hosts
-          cat ~/.ssh/id_rsa
+
       - name: Create .env file on server
         run: |
-          ssh -v -o StrictHostKeyChecking=no deploy@${{ secrets.DO_SERVER_IP }} "echo SSH Connection Successful"
+          ssh deploy@${{ secrets.DO_SERVER_IP }} << 'EOF'
+            echo "${{ secrets.ENV_FILE }}" > /home/deploy/app/.env
+          EOF
 
 
       - name: Deploy to DigitalOcean
         run: |
           ssh deploy@${{ secrets.DO_SERVER_IP }} << 'EOF'
             cd /home/deploy/app
-            git pull origin main
+            git pull origin master
             docker-compose -f docker-compose.prod.yaml up -d --build
           EOF
