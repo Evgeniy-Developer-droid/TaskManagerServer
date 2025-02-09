@@ -23,27 +23,17 @@ jobs:
       - name: Create .env file on server
         run: |
           ssh deploy@${{ secrets.DO_SERVER_IP }} << 'EOF'
-            mkdir -p /home/deploy/app
-            echo "${{ secrets.ENV_FILE }}" > /home/deploy/app/.env
+            echo "${{ secrets.ENV_FILE }}" > /home/deploy/app/TaskManagerServer/.env
           EOF
 
 
       - name: Deploy to DigitalOcean
         run: |
           ssh deploy@${{ secrets.DO_SERVER_IP }} << 'EOF'
-            mkdir -p /home/deploy/app
-            cd /home/deploy/app
 
-            ssh-keyscan -H github.com >> ~/.ssh/known_hosts
+            cd /home/deploy/app/TaskManagerServer
 
-            if [ ! -d ".git" ]; then
-              git clone ${{ secrets.GIT_REPO_URL }}
-            else
-              git pull origin master
-            fi
-            
-            rm -rf /home/deploy/app/TaskManagerServer
-            mv ./TaskManagerServer ../
+            git pull origin master
 
             docker-compose -f docker-compose.prod.yaml up -d --build
           EOF
