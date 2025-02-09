@@ -19,12 +19,10 @@ jobs:
           echo "${{ secrets.DO_SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H ${{ secrets.DO_SERVER_IP }} >> ~/.ssh/known_hosts
+          cat ~/.ssh/id_rsa
       - name: Create .env file on server
         run: |
-          ssh -o StrictHostKeyChecking=no deploy@${{ secrets.DO_SERVER_IP }} << 'EOF'
-            echo "${{ secrets.ENV_FILE }}" > /home/deploy/app/.env
-            chmod 600 /home/deploy/app/.env
-          EOF
+          ssh -v -o StrictHostKeyChecking=no deploy@${{ secrets.DO_SERVER_IP }} "echo SSH Connection Successful"
 
 
       - name: Deploy to DigitalOcean
