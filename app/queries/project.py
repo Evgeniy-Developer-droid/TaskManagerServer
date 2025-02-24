@@ -37,6 +37,7 @@ async def get_project(project_id: int, user_id: int, session: AsyncSession) -> P
 
 async def delete_project(project_id: int, user_id: int, session: AsyncSession) -> bool:
     try:
+        await delete_tasks(project_id, user_id, session)
         stmt = delete(Project).where(
             Project.user_id == user_id, Project.id == project_id, Project.is_default == False
         )
@@ -117,6 +118,19 @@ async def delete_task(
         return bool(result.rowcount)
     except Exception as e:
         print(f"Error deleting Task - user:{user_id} project:{project_id}")
+        return False
+
+
+async def delete_tasks(project_id: int, user_id: int, session: AsyncSession) -> bool:
+    try:
+        stmt = delete(Task).where(
+            Task.user_id == user_id, Task.project_id == project_id
+        )
+        result = await session.execute(stmt)
+        await session.commit()
+        return bool(result.rowcount)
+    except Exception as e:
+        print(f"Error deleting Tasks - user:{user_id} project:{project_id}")
         return False
 
 
